@@ -50,7 +50,7 @@ def spellcheck_pdfs(rootDir):
 
                     encodedContent = urllib.parse.quote_plus(text)
 
-                    request = Request("https://languagetool.org/api/v2/check", str.encode("disabledRules=CASING&text="+ encodedContent +"&language=de-DE"))
+                    request = Request("https://languagetool.org/api/v2/check", str.encode("disabledRules=UPPERCASE_SENTENCE_START&text="+ encodedContent +"&language=de-DE"))
                     waitingForRequest = True
 
                     while waitingForRequest:

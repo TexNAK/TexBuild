@@ -1,5 +1,4 @@
 import os
-import sys
 import subprocess
 from urllib.request import Request, urlopen
 import urllib.parse
@@ -30,8 +29,11 @@ def spellcheck_pdfs(rootDir):
                 process = subprocess.run(["pdftotext", filePath, "-"], stdout=subprocess.PIPE)
                 content = process.stdout.decode('utf-8')
 
-                repairedContent = re.sub("\n", "\n\n", re.sub("\n(?=\w)", " ", content))
+                repairedContent = re.sub(" *(\.[\n ]*){2,} *", "\n", re.sub("\n", "\n\n", re.sub("\n(?=\w)", " ", content)))
                 sentences = re.split("(?<=[\\.!?]) ", repairedContent)
+
+# print(repairedContent)
+#                exit(0)
 
                 sentenceIndex = 0
                 foundError = False
@@ -48,7 +50,7 @@ def spellcheck_pdfs(rootDir):
 
                     encodedContent = urllib.parse.quote_plus(text)
 
-                    request = Request("https://languagetool.org/api/v2/check", str.encode("text="+ encodedContent +"&language=de-DE"))
+                    request = Request("https://languagetool.org/api/v2/check", str.encode("disabledRules=CASING&text="+ encodedContent +"&language=de-DE"))
                     waitingForRequest = True
 
                     while waitingForRequest:
@@ -88,3 +90,9 @@ def spellcheck_pdfs(rootDir):
                             print("waiting")
                             sleep(60)
     return markdown
+
+
+if __name__ == "__main__":
+    import sys
+    for folder in sys.argv[1:]:
+        print(spellcheck_pdfs(folder))

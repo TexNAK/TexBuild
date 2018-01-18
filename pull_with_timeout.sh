@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-#docker pull blang/latex &
-sleep 30 &
+docker pull blang/latex &
 BPID=$!
 i=0
 while :; do

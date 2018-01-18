@@ -3,6 +3,7 @@ import re
 import os
 import sys
 import subprocess
+import spellchecker
 
 from github import Github
 
@@ -131,31 +132,27 @@ print("Repository:\t" + repository)
 print("Pull request:\t" + str(pullReqID))
 print("Files:\t\t" + str(files))
 
-markdownCode = "# Document analysis\n\n"
-for file in files:
-    folder = os.path.dirname(os.path.abspath(file))
-    markdownCode += "## Grammar check (" + os.path.basename(file) + ")\n\n"
-    markdownCode += "LINTING CODE HERE"
-    markdownCode += "\n\n"
-
-markdownCode += "\n\n___\n\n"
-
-for file in files:
-    folder = os.path.dirname(os.path.abspath(file))
-    filename = os.path.basename(file)
-    markdownCode += "## Statistics (" + filename + ")\n\n"
-
-    texcount_output = get_texcount_output(scriptPath + "/dockercmd.sh", folder, filename)
-    markdownCode += process_texcount_output(texcount_output)
-
-    markdownCode += "\n\n"
-
-
 g = Github(githubToken)
 
 pullReq = g.get_organization(organization).get_repo(repository).get_pull(pullReqID)
 
-if pullReq:
+if not pullReq:
+    print("Pull request not found!")
+    exit(1)
+
+for file in files:
+    folder = os.path.dirname(os.path.abspath(file))
+    filename = os.path.basename(file)
+
+    markdownCode = "# Document analysis (" + filename + ")\n\n"
+    markdownCode += "## Grammar check\n\n"
+    markdownCode += spellchecker.spellcheck_pdfs(folder)
+
+    markdownCode += "\n\n___\n\n"
+
+    markdownCode += "## Statistics\n\n"
+    texcount_output = get_texcount_output(scriptPath + "/dockercmd.sh", folder, filename)
+    markdownCode += process_texcount_output(texcount_output)
+
     print("\nCommenting on GitHub ...")
-    print(pullReq)
     pullReq.create_issue_comment(markdownCode)

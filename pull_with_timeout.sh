@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 docker pull blang/latex &
 BPID=$!
 i=0

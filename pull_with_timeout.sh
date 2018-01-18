@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-docker pull blang/latex &
+#docker pull blang/latex &
+sleep 30 &
 BPID=$!
 i=0
 while :; do
-    if ps -p $BPID >&-; then
+    if jobs %% >/dev/null; then
         echo -e ".\c"
         sleep 5
         ((i+=5))

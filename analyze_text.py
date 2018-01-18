@@ -144,7 +144,7 @@ for file in files:
     folder = os.path.dirname(os.path.abspath(file))
     filename = os.path.basename(file)
 
-    markdownCode = "# Document analysis (" + filename + ")\n\n"
+    markdownCode = "# Document analysis (" + file + ")\n\n"
     markdownCode += "## Grammar check\n\n"
     markdownCode += spellchecker.spellcheck_pdfs(folder)
 

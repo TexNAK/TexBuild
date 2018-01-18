@@ -29,11 +29,8 @@ def spellcheck_pdfs(rootDir):
                 process = subprocess.run(["pdftotext", filePath, "-"], stdout=subprocess.PIPE)
                 content = process.stdout.decode('utf-8')
 
-                repairedContent = re.sub(" *(\.[\n ]*){2,} *", "\n", re.sub("\n", "\n\n", re.sub("\n(?=\w)", " ", content)))
+                repairedContent = re.sub("\n", "\n\n", re.sub("\n(?=\w)", " ", content))
                 sentences = re.split("(?<=[\\.!?]) ", repairedContent)
-
-# print(repairedContent)
-#                exit(0)
 
                 sentenceIndex = 0
                 foundError = False
@@ -50,7 +47,7 @@ def spellcheck_pdfs(rootDir):
 
                     encodedContent = urllib.parse.quote_plus(text)
 
-                    request = Request("https://languagetool.org/api/v2/check", str.encode("disabledRules=CASING&text="+ encodedContent +"&language=de-DE"))
+                    request = Request("https://languagetool.org/api/v2/check", str.encode("disabledRules=UPPERCASE_SENTENCE_START,DE_CASE,GERMAN_WORD_REPEAT_RULE,DE_PHRASE_REPETITION,COMMA_PARENTHESIS_WHITESPACE&text="+ encodedContent +"&language=de-DE"))
                     waitingForRequest = True
 
                     while waitingForRequest:
@@ -73,7 +70,7 @@ def spellcheck_pdfs(rootDir):
 
                                 if error_included(errorID, string):
                                     foundError = True
-                                    markdown += "|"+ errorID +"|\n"
+                                    markdown += "|"+ errorID + ": " + match['rule']['id'] +"|\n"
                                     markdown += "|-|\n"
                                     markdown += "|" + markedContextText + "|\n"
                                     markdown += "|" + message + "|\n"

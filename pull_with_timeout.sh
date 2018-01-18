@@ -2,9 +2,9 @@
 docker pull blang/latex &
 BPID=$!
 i=0
-while True; do
+while :; do
     if ps -p $BPID >&-; then
-        echo ".\c"
+        echo -e ".\c"
         sleep 5
         ((i+=5))
 
